@@ -13,7 +13,7 @@ import {
 const currentDomain = new URL(window.location.href);
 const apiURL = `http://${currentDomain.hostname}:3000/api/plugins/vaultwarden`;
 
-async function PluginConfig() {
+function PluginConfig() {
   var [config, setConfig] = React.useState({
     domain: '',
     allowSignups: false,
@@ -32,7 +32,7 @@ async function PluginConfig() {
       const data = await response.json();
       config = data;
     } catch (error) {
-      console.error('Failed to load configuration:', error);
+      console.error('No configuration found:', error);
     }
   };
 
@@ -52,7 +52,7 @@ async function PluginConfig() {
     }
   };
 
-  await loadConfig();
+  loadConfig();
 
   return (
     <Card>
