@@ -10,8 +10,8 @@ import {
   Typography,
 } from '@mui/material';
 
-function VaultwardenConfig() {
-  const [config, setConfig] = useState({
+function PluginConfig() {
+  const [config, setConfig] = React.useState({
     domain: '',
     allowSignups: false,
     adminToken: '',
