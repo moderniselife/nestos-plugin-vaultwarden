@@ -30,7 +30,7 @@ function PluginConfig() {
     try {
       const response = await fetch(`${apiURL}/config`);
       const data = await response.json();
-      config = data;
+      setConfig(data);
     } catch (error) {
       console.error('No configuration found:', error);
     }
