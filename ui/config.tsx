@@ -73,6 +73,40 @@ export default function VaultwardenConfig() {
             value={config.port}
             onChange={(e) => setConfig({ ...config, port: e.target.value })}
           />
+          <Typography variant="subtitle2" sx={{ mt: 2 }}>
+            Email Configuration (Optional)
+          </Typography>
+          <TextField
+            fullWidth
+            label="SMTP Host"
+            value={config.smtpHost}
+            onChange={(e) => setConfig({ ...config, smtpHost: e.target.value })}
+          />
+          <TextField
+            fullWidth
+            label="SMTP From"
+            value={config.smtpFrom}
+            onChange={(e) => setConfig({ ...config, smtpFrom: e.target.value })}
+          />
+          <TextField
+            fullWidth
+            label="SMTP Port"
+            value={config.smtpPort}
+            onChange={(e) => setConfig({ ...config, smtpPort: e.target.value })}
+          />
+          <TextField
+            fullWidth
+            label="SMTP Username"
+            value={config.smtpUsername}
+            onChange={(e) => setConfig({ ...config, smtpUsername: e.target.value })}
+          />
+          <TextField
+            fullWidth
+            label="SMTP Password"
+            value={config.smtpPassword}
+            onChange={(e) => setConfig({ ...config, smtpPassword: e.target.value })}
+            type="password"
+          />
           <Button variant="contained" onClick={handleSave}>
             Save Configuration
           </Button>
