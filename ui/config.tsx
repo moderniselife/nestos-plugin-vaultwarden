@@ -7,10 +7,10 @@ import {
   Button,
   Card,
   CardContent,
-  Typography
+  Typography,
 } from '@mui/material';
 
-export default function VaultwardenConfig() {
+function VaultwardenConfig() {
   const [config, setConfig] = useState({
     domain: '',
     allowSignups: false,
@@ -20,7 +20,7 @@ export default function VaultwardenConfig() {
     smtpFrom: '',
     smtpPort: '587',
     smtpUsername: '',
-    smtpPassword: ''
+    smtpPassword: '',
   });
 
   const handleSave = async () => {
@@ -28,7 +28,7 @@ export default function VaultwardenConfig() {
       await fetch('/api/plugins/vaultwarden/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config)
+        body: JSON.stringify(config),
       });
       // Restart container to apply changes
       await fetch('/api/plugins/vaultwarden/restart', { method: 'POST' });
