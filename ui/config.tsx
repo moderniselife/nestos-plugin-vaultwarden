@@ -15,15 +15,15 @@ const apiURL = `http://${currentDomain.hostname}:3000/api/plugins/vaultwarden`;
 
 function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = false }) {
   var [config, setConfig] = React.useState({
-    domain: '',
-    allowSignups: false,
-    adminToken: '',
-    port: '8100',
-    smtpHost: '',
-    smtpFrom: '',
-    smtpPort: '587',
-    smtpUsername: '',
-    smtpPassword: '',
+    DOMAIN: '',
+    ALLOW_SIGNUPS: false,
+    ADMIN_TOKEN: '',
+    PORT: '8100',
+    SMTP_HOST: '',
+    SMTP_FROM: '',
+    SMTP_PORT: '587',
+    SMTP_USERNAME: '',
+    SMTP_PASSWORD: '',
   });
 
   useEffect(() => {
@@ -33,6 +33,12 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
       loadConfig();
     }
   }, [initialConfig]);
+
+  // Add this function to handle all config updates
+  const updateConfig = (newConfig: typeof config) => {
+    setConfig(newConfig);
+    onChange?.(newConfig);
+  };
 
   const handleSave = async () => {
     if (isPreInstall) {
@@ -75,15 +81,15 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
           <TextField
             fullWidth
             label="Domain"
-            value={config?.domain || ''}
-            onChange={(e) => setConfig({ ...config, domain: e.target.value })}
+            value={config?.DOMAIN || ''}
+            onChange={(e) => updateConfig({ ...config, DOMAIN: e.target.value })}
             helperText="Full URL where Vaultwarden will be accessible"
           />
           <FormControlLabel
             control={
               <Switch
-                checked={config?.allowSignups || false}
-                onChange={(e) => setConfig({ ...config, allowSignups: e.target.checked })}
+                checked={config?.ALLOW_SIGNUPS || false}
+                onChange={(e) => updateConfig({ ...config, ALLOW_SIGNUPS: e.target.checked })}
               />
             }
             label="Allow Signups"
@@ -91,15 +97,15 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
           <TextField
             fullWidth
             label="Admin Token"
-            value={config?.adminToken || ''}
-            onChange={(e) => setConfig({ ...config, adminToken: e.target.value })}
+            value={config?.ADMIN_TOKEN || ''}
+            onChange={(e) => updateConfig({ ...config, ADMIN_TOKEN: e.target.value })}
             type="password"
           />
           <TextField
             fullWidth
             label="Port"
-            value={config?.port || 8100}
-            onChange={(e) => setConfig({ ...config, port: e.target.value })}
+            value={config?.PORT || 8100}
+            onChange={(e) => updateConfig({ ...config, PORT: e.target.value })}
           />
           <Typography variant="subtitle2" sx={{ mt: 2 }}>
             Email Configuration (Optional)
@@ -107,36 +113,36 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
           <TextField
             fullWidth
             label="SMTP Host"
-            value={config?.smtpHost || ''}
-            onChange={(e) => setConfig({ ...config, smtpHost: e.target.value })}
+            value={config?.SMTP_HOST || ''}
+            onChange={(e) => updateConfig({ ...config, SMTP_HOST: e.target.value })}
           />
           <TextField
             fullWidth
             label="SMTP From"
-            value={config?.smtpFrom || ''}
-            onChange={(e) => setConfig({ ...config, smtpFrom: e.target.value })}
+            value={config?.SMTP_FROM || ''}
+            onChange={(e) => updateConfig({ ...config, SMTP_FROM: e.target.value })}
           />
           <TextField
             fullWidth
             label="SMTP Port"
-            value={config?.smtpPort || ''}
-            onChange={(e) => setConfig({ ...config, smtpPort: e.target.value })}
+            value={config?.SMTP_PORT || ''}
+            onChange={(e) => updateConfig({ ...config, SMTP_PORT: e.target.value })}
           />
           <TextField
             fullWidth
             label="SMTP Username"
-            value={config?.smtpUsername || ''}
-            onChange={(e) => setConfig({ ...config, smtpUsername: e.target.value })}
+            value={config?.SMTP_USERNAME || ''}
+            onChange={(e) => updateConfig({ ...config, SMTP_USERNAME: e.target.value })}
           />
           <TextField
             fullWidth
             label="SMTP Password"
-            value={config?.smtpPassword || ''}
-            onChange={(e) => setConfig({ ...config, smtpPassword: e.target.value })}
+            value={config?.SMTP_PASSWORD || ''}
+            onChange={(e) => updateConfig({ ...config, SMTP_PASSWORD: e.target.value })}
             type="password"
           />
           <Button variant="contained" onClick={handleSave}>
-            Save Configuration
+            {isPreInstall ? 'Install with Configuration' : 'Save Configuration'}
           </Button>
         </Box>
       </CardContent>
