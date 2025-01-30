@@ -34,11 +34,13 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
     }
   }, [initialConfig]);
 
-  // Remove TypeScript type annotation
-  const updateConfig = (newConfig) => {
-    setConfig(newConfig);
-    onChange?.(newConfig);
-  };
+  const updateConfig = React.useCallback(
+    (newConfig) => {
+      setConfig(newConfig);
+      onChange?.(newConfig);
+    },
+    [onChange]
+  );
 
   const handleSave = async () => {
     if (isPreInstall) {
@@ -82,6 +84,8 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
             value={config?.DOMAIN || ''}
             onChange={(e) => updateConfig({ ...config, DOMAIN: e.target.value })}
             helperText="Full URL where Vaultwarden will be accessible"
+            autoComplete="off"
+            inputProps={{ autoComplete: 'off' }}
           />
           <FormControlLabel
             control={
@@ -98,12 +102,16 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
             value={config?.ADMIN_TOKEN || ''}
             onChange={(e) => updateConfig({ ...config, ADMIN_TOKEN: e.target.value })}
             type="password"
+            autoComplete="off"
+            inputProps={{ autoComplete: 'off' }}
           />
           <TextField
             fullWidth
             label="Port"
             value={config?.PORT || 8100}
             onChange={(e) => updateConfig({ ...config, PORT: e.target.value })}
+            autoComplete="off"
+            inputProps={{ autoComplete: 'off' }}
           />
           <Typography variant="subtitle2" sx={{ mt: 2 }}>
             Email Configuration (Optional)
@@ -113,30 +121,40 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
             label="SMTP Host"
             value={config?.SMTP_HOST || ''}
             onChange={(e) => updateConfig({ ...config, SMTP_HOST: e.target.value })}
+            autoComplete="off"
+            inputProps={{ autoComplete: 'off' }}
           />
           <TextField
             fullWidth
             label="SMTP From"
             value={config?.SMTP_FROM || ''}
             onChange={(e) => updateConfig({ ...config, SMTP_FROM: e.target.value })}
+            autoComplete="off"
+            inputProps={{ autoComplete: 'off' }}
           />
           <TextField
             fullWidth
             label="SMTP Port"
             value={config?.SMTP_PORT || ''}
             onChange={(e) => updateConfig({ ...config, SMTP_PORT: e.target.value })}
+            autoComplete="off"
+            inputProps={{ autoComplete: 'off' }}
           />
           <TextField
             fullWidth
             label="SMTP Username"
             value={config?.SMTP_USERNAME || ''}
             onChange={(e) => updateConfig({ ...config, SMTP_USERNAME: e.target.value })}
+            autoComplete="off"
+            inputProps={{ autoComplete: 'off' }}
           />
           <TextField
             fullWidth
             label="SMTP Password"
             value={config?.SMTP_PASSWORD || ''}
             onChange={(e) => updateConfig({ ...config, SMTP_PASSWORD: e.target.value })}
+            autoComplete="off"
+            inputProps={{ autoComplete: 'off' }}
             type="password"
           />
           <Button variant="contained" onClick={handleSave}>
