@@ -13,8 +13,31 @@ import {
 const currentDomain = new URL(window.location.href);
 const apiURL = `http://${currentDomain.hostname}:3000/api/plugins/vaultwarden`;
 
+interface ConfigTextFieldProps {
+  label: string;
+  value: string | number | boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  helperText?: string;
+}
+
+const ConfigTextField = React.memo<ConfigTextFieldProps>(
+  ({ label, value, onChange, type = 'text', helperText = '' }) => (
+    <TextField
+      fullWidth
+      label={label}
+      value={value || ''}
+      onChange={onChange}
+      type={type}
+      helperText={helperText}
+      autoComplete="off"
+      inputProps={{ autoComplete: 'off' }}
+    />
+  )
+);
+
 function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = false }) {
-  const configRef = React.useRef(
+  var [config, setConfig] = useState(
     initialConfig || {
       DOMAIN: '',
       ALLOW_SIGNUPS: false,
@@ -28,36 +51,33 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
     }
   );
 
-  // Use local state only for forcing updates
-  const [, forceUpdate] = React.useState({});
-
   useEffect(() => {
     if (initialConfig) {
-      configRef.current = initialConfig;
-      forceUpdate({});
+      setConfig(initialConfig);
     } else {
       loadConfig();
     }
   }, [initialConfig]);
 
-  const updateConfig = React.useCallback(
-    (key, value) => {
-      configRef.current = { ...configRef.current, [key]: value };
-      onChange?.(configRef.current);
-      forceUpdate({});
+  const handleChange = React.useCallback(
+    (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+      const newConfig = { ...config, [key]: value };
+      setConfig(newConfig);
+      onChange?.(newConfig);
     },
-    [onChange]
+    [config, onChange]
   );
 
   const handleSave = async () => {
     if (isPreInstall) {
-      onSave?.(configRef.current);
+      onSave?.(config);
     } else {
       try {
         await fetch(`${apiURL}/config`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(configRef.current),
+          body: JSON.stringify(config),
         });
         await fetch(`${apiURL}/restart`, {
           method: 'POST',
@@ -72,8 +92,7 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
     try {
       const response = await fetch(`${apiURL}/config`);
       const data = await response.json();
-      configRef.current = data;
-      forceUpdate({});
+      config = data;
     } catch (error) {
       console.error('No configuration found:', error);
     }
@@ -86,89 +105,69 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
           Vaultwarden Configuration
         </Typography>
         <Box component="form" sx={{ '& > :not(style)': { m: 1 } }}>
-          <TextField
-            fullWidth
+          <ConfigTextField
             label="Domain"
-            value={configRef.current.DOMAIN || ''}
-            onChange={(e) => updateConfig('DOMAIN', e.target.value)}
+            value={config.DOMAIN}
+            onChange={handleChange('DOMAIN')}
             helperText="Full URL where Vaultwarden will be accessible"
-            autoComplete="off"
-            inputProps={{ autoComplete: 'off' }}
           />
           <FormControlLabel
             control={
               <Switch
-                checked={configRef.current.ALLOW_SIGNUPS || false}
-                onChange={(e) => updateConfig('ALLOW_SIGNUPS', e.target.checked)}
+                checked={config.ALLOW_SIGNUPS || false}
+                onChange={handleChange('ALLOW_SIGNUPS')}
               />
             }
             label="Allow Signups"
           />
-          <TextField
-            fullWidth
+          <ConfigTextField
             label="Admin Token"
-            value={configRef.current.ADMIN_TOKEN || ''}
-            onChange={(e) => updateConfig('ADMIN_TOKEN', e.target.value)}
+            value={config.ADMIN_TOKEN}
+            onChange={handleChange('ADMIN_TOKEN')}
             type="password"
-            autoComplete="off"
-            inputProps={{ autoComplete: 'off' }}
+            helperText="Token for accessing the admin panel"
           />
-          <TextField
-            fullWidth
+          <ConfigTextField
             label="Port"
-            value={configRef.current.PORT || 8100}
-            onChange={(e) => updateConfig('PORT', e.target.value)}
-            autoComplete="off"
-            inputProps={{ autoComplete: 'off' }}
+            value={config.PORT}
+            onChange={handleChange('PORT')}
+            helperText="Port for the Vaultwarden server"
           />
           <Typography variant="subtitle2" sx={{ mt: 2 }}>
             Email Configuration (Optional)
           </Typography>
-          <TextField
-            fullWidth
+          <ConfigTextField
             label="SMTP Host"
-            value={configRef.current.SMTP_HOST || ''}
-            onChange={(e) => updateConfig('SMTP_HOST', e.target.value)}
-            autoComplete="off"
-            inputProps={{ autoComplete: 'off' }}
+            value={config.SMTP_HOST}
+            onChange={handleChange('SMTP_HOST')}
+            helperText="SMTP server host"
           />
-          <TextField
-            fullWidth
+          <ConfigTextField
             label="SMTP From"
-            value={configRef.current.SMTP_FROM || ''}
-            onChange={(e) => updateConfig('SMTP_FROM', e.target.value)}
-            autoComplete="off"
-            inputProps={{ autoComplete: 'off' }}
+            value={config.SMTP_FROM}
+            onChange={handleChange('SMTP_FROM')}
+            helperText="Email address to send emails from"
           />
-          <TextField
-            fullWidth
+          <ConfigTextField
             label="SMTP Port"
-            value={configRef.current.SMTP_PORT || ''}
-            onChange={(e) => updateConfig('SMTP_PORT', e.target.value)}
-            autoComplete="off"
-            inputProps={{ autoComplete: 'off' }}
+            value={config.SMTP_PORT}
+            onChange={handleChange('SMTP_PORT')}
+            helperText="SMTP server port"
           />
-          <TextField
-            fullWidth
+          <ConfigTextField
             label="SMTP Username"
-            value={configRef.current.SMTP_USERNAME || ''}
-            onChange={(e) => updateConfig('SMTP_USERNAME', e.target.value)}
-            autoComplete="off"
-            inputProps={{ autoComplete: 'off' }}
+            value={config.SMTP_USERNAME}
+            onChange={handleChange('SMTP_USERNAME')}
+            helperText="SMTP server username"
           />
-          <TextField
-            fullWidth
+          <ConfigTextField
             label="SMTP Password"
-            value={configRef.current.SMTP_PASSWORD || ''}
-            onChange={(e) => updateConfig('SMTP_PASSWORD', e.target.value)}
-            autoComplete="off"
-            inputProps={{ autoComplete: 'off' }}
+            value={config.SMTP_PASSWORD}
+            onChange={handleChange('SMTP_PASSWORD')}
             type="password"
+            helperText="SMTP server password"
           />
-          <Button
-            variant="contained"
-            onClick={() => (isPreInstall ? onSave?.(configRef.current) : handleSave())}
-          >
+          <Button variant="contained" onClick={handleSave}>
             {isPreInstall ? 'Install with Configuration' : 'Save Configuration'}
           </Button>
         </Box>
