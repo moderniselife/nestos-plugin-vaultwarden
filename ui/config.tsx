@@ -13,7 +13,7 @@ import {
 const currentDomain = new URL(window.location.href);
 const apiURL = `http://${currentDomain.hostname}:3000/api/plugins/vaultwarden`;
 
-function PluginConfig() {
+function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = false }) {
   var [config, setConfig] = React.useState({
     domain: '',
     allowSignups: false,
@@ -26,6 +26,35 @@ function PluginConfig() {
     smtpPassword: '',
   });
 
+  useEffect(() => {
+    if (initialConfig) {
+      setConfig(initialConfig);
+    } else {
+      loadConfig();
+    }
+  }, [initialConfig]);
+
+  const handleSave = async () => {
+    if (isPreInstall) {
+      // For pre-installation, just call onSave with the config
+      onSave?.(config);
+    } else {
+      try {
+        await fetch(`${apiURL}/config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(config),
+        });
+        // Only restart if not in pre-installation mode
+        await fetch(`${apiURL}/restart`, {
+          method: 'POST',
+        });
+      } catch (error) {
+        console.error('Failed to save configuration:', error);
+      }
+    }
+  };
+
   const loadConfig = async () => {
     try {
       const response = await fetch(`${apiURL}/config`);
@@ -35,26 +64,6 @@ function PluginConfig() {
       console.error('No configuration found:', error);
     }
   };
-
-  const handleSave = async () => {
-    try {
-      await fetch(`${apiURL}/config`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config),
-      });
-      // Restart container to apply changes
-      await fetch(`${apiURL}/restart`, {
-        method: 'POST',
-      });
-    } catch (error) {
-      console.error('Failed to save configuration:', error);
-    }
-  };
-
-  useEffect(() => {
-    loadConfig();
-  }, []);
 
   return (
     <Card>
