@@ -14,12 +14,12 @@ import {
 const currentDomain = new URL(window.location.href);
 const apiURL = `http://${currentDomain.hostname}:3000/api/plugins/vaultwarden`;
 
-const ConfigTextField = React.memo(({ label, value, onChange, type = 'text', helperText = '' }) => (
+const ConfigTextField = React.memo(({ label, value, onBlur, type = 'text', helperText = '' }) => (
   <TextField
     fullWidth
     label={label}
     value={value || ''}
-    onChange={onChange}
+    onBlur={onBlur}
     type={type}
     helperText={helperText}
     autoComplete="off"
@@ -27,7 +27,7 @@ const ConfigTextField = React.memo(({ label, value, onChange, type = 'text', hel
   />
 ));
 
-function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = false }) {
+function PluginConfig({ config: initialConfig, onBlur, onSave, isPreInstall = false }) {
   var [config, setConfig] = useState(
     initialConfig || {
       DOMAIN: '',
@@ -55,9 +55,9 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
       const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
       const newConfig = { ...config, [key]: value };
       setConfig(newConfig);
-      onChange?.(newConfig);
+      onBlur?.(newConfig);
     },
-    [config, onChange]
+    [config, onBlur]
   );
 
   const handleSave = async () => {
@@ -99,14 +99,14 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
           <ConfigTextField
             label="Domain"
             value={config.DOMAIN}
-            onChange={handleChange('DOMAIN')}
+            onBlur={handleChange('DOMAIN')}
             helperText="Full URL where Vaultwarden will be accessible"
           />
           <FormControlLabel
             control={
               <Switch
                 checked={config.ALLOW_SIGNUPS || false}
-                onChange={handleChange('ALLOW_SIGNUPS')}
+                onBlur={handleChange('ALLOW_SIGNUPS')}
               />
             }
             label="Allow Signups"
@@ -114,14 +114,14 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
           <ConfigTextField
             label="Admin Token"
             value={config.ADMIN_TOKEN}
-            onChange={handleChange('ADMIN_TOKEN')}
+            onBlur={handleChange('ADMIN_TOKEN')}
             type="password"
             helperText="Token for accessing the admin panel"
           />
           <ConfigTextField
             label="Port"
             value={config.PORT}
-            onChange={handleChange('PORT')}
+            onBlur={handleChange('PORT')}
             helperText="Port for the Vaultwarden server"
           />
           <Typography variant="subtitle2" sx={{ mt: 2 }}>
@@ -130,31 +130,31 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
           <ConfigTextField
             label="SMTP Host"
             value={config.SMTP_HOST}
-            onChange={handleChange('SMTP_HOST')}
+            onBlur={handleChange('SMTP_HOST')}
             helperText="SMTP server host"
           />
           <ConfigTextField
             label="SMTP From"
             value={config.SMTP_FROM}
-            onChange={handleChange('SMTP_FROM')}
+            onBlur={handleChange('SMTP_FROM')}
             helperText="Email address to send emails from"
           />
           <ConfigTextField
             label="SMTP Port"
             value={config.SMTP_PORT}
-            onChange={handleChange('SMTP_PORT')}
+            onBlur={handleChange('SMTP_PORT')}
             helperText="SMTP server port"
           />
           <ConfigTextField
             label="SMTP Username"
             value={config.SMTP_USERNAME}
-            onChange={handleChange('SMTP_USERNAME')}
+            onBlur={handleChange('SMTP_USERNAME')}
             helperText="SMTP server username"
           />
           <ConfigTextField
             label="SMTP Password"
             value={config.SMTP_PASSWORD}
-            onChange={handleChange('SMTP_PASSWORD')}
+            onBlur={handleChange('SMTP_PASSWORD')}
             type="password"
             helperText="SMTP server password"
           />
