@@ -59,7 +59,7 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
   }, [initialConfig]);
 
   const handleChange = React.useCallback(
-    (key: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    (key) => (e) => {
       const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
       const newConfig = { ...config, [key]: value };
       setConfig(newConfig);
