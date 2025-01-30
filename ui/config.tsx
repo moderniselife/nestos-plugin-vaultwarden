@@ -34,15 +34,14 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
     }
   }, [initialConfig]);
 
-  // Add this function to handle all config updates
-  const updateConfig = (newConfig: typeof config) => {
+  // Remove TypeScript type annotation
+  const updateConfig = (newConfig) => {
     setConfig(newConfig);
     onChange?.(newConfig);
   };
 
   const handleSave = async () => {
     if (isPreInstall) {
-      // For pre-installation, just call onSave with the config
       onSave?.(config);
     } else {
       try {
@@ -51,7 +50,6 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(config),
         });
-        // Only restart if not in pre-installation mode
         await fetch(`${apiURL}/restart`, {
           method: 'POST',
         });
