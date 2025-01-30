@@ -27,14 +27,6 @@ const ConfigTextField = React.memo(({ label, value, onChange, type = 'text', hel
   />
 ));
 
-ConfigTextField.propTypes = {
-  label: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
-  onChange: PropTypes.func.isRequired,
-  type: PropTypes.string,
-  helperText: PropTypes.string,
-};
-
 function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = false }) {
   var [config, setConfig] = useState(
     initialConfig || {
