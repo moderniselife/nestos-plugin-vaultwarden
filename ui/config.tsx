@@ -41,7 +41,7 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
   }, [initialConfig]);
 
   const updateConfig = React.useCallback(
-    (key: string, value: any) => {
+    (key, value) => {
       configRef.current = { ...configRef.current, [key]: value };
       onChange?.(configRef.current);
       forceUpdate({});
