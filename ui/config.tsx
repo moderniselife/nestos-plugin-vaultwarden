@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   TextField,
@@ -13,28 +14,26 @@ import {
 const currentDomain = new URL(window.location.href);
 const apiURL = `http://${currentDomain.hostname}:3000/api/plugins/vaultwarden`;
 
-interface ConfigTextFieldProps {
-  label: string;
-  value: string | number | boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  type?: string;
-  helperText?: string;
-}
+const ConfigTextField = React.memo(({ label, value, onChange, type = 'text', helperText = '' }) => (
+  <TextField
+    fullWidth
+    label={label}
+    value={value || ''}
+    onChange={onChange}
+    type={type}
+    helperText={helperText}
+    autoComplete="off"
+    inputProps={{ autoComplete: 'off' }}
+  />
+));
 
-const ConfigTextField = React.memo<ConfigTextFieldProps>(
-  ({ label, value, onChange, type = 'text', helperText = '' }) => (
-    <TextField
-      fullWidth
-      label={label}
-      value={value || ''}
-      onChange={onChange}
-      type={type}
-      helperText={helperText}
-      autoComplete="off"
-      inputProps={{ autoComplete: 'off' }}
-    />
-  )
-);
+ConfigTextField.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
+  onChange: PropTypes.func.isRequired,
+  type: PropTypes.string,
+  helperText: PropTypes.string,
+};
 
 function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = false }) {
   var [config, setConfig] = useState(
