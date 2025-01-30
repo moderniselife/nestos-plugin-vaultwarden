@@ -14,20 +14,29 @@ import {
 const currentDomain = new URL(window.location.href);
 const apiURL = `http://${currentDomain.hostname}:3000/api/plugins/vaultwarden`;
 
-const ConfigTextField = React.memo(({ label, value, onBlur, type = 'text', helperText = '' }) => (
-  <TextField
-    fullWidth
-    label={label}
-    value={value || ''}
-    onBlur={onBlur}
-    type={type}
-    helperText={helperText}
-    autoComplete="off"
-    inputProps={{ autoComplete: 'off' }}
-  />
-));
+const ConfigTextField = React.memo(({ label, value, onChange, type = 'text', helperText = '' }) => {
+  const [localValue, setLocalValue] = React.useState(value);
 
-function PluginConfig({ config: initialConfig, onBlur, onSave, isPreInstall = false }) {
+  React.useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  return (
+    <TextField
+      fullWidth
+      label={label}
+      value={localValue || ''}
+      onChange={(e) => setLocalValue(e.target.value)}
+      onBlur={() => onChange?.(localValue)}
+      type={type}
+      helperText={helperText}
+      autoComplete="off"
+      inputProps={{ autoComplete: 'off' }}
+    />
+  );
+});
+
+function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = false }) {
   var [config, setConfig] = useState(
     initialConfig || {
       DOMAIN: '',
@@ -51,13 +60,12 @@ function PluginConfig({ config: initialConfig, onBlur, onSave, isPreInstall = fa
   }, [initialConfig]);
 
   const handleChange = React.useCallback(
-    (key) => (e) => {
-      const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    (key) => (value) => {
       const newConfig = { ...config, [key]: value };
       setConfig(newConfig);
-      onBlur?.(newConfig);
+      onChange?.(newConfig);
     },
-    [config, onBlur]
+    [config, onChange]
   );
 
   const handleSave = async () => {
@@ -99,14 +107,14 @@ function PluginConfig({ config: initialConfig, onBlur, onSave, isPreInstall = fa
           <ConfigTextField
             label="Domain"
             value={config.DOMAIN}
-            onBlur={handleChange('DOMAIN')}
+            onChange={(value) => handleChange('DOMAIN')(value)}
             helperText="Full URL where Vaultwarden will be accessible"
           />
           <FormControlLabel
             control={
               <Switch
                 checked={config.ALLOW_SIGNUPS || false}
-                onBlur={handleChange('ALLOW_SIGNUPS')}
+                onChange={(e) => handleChange('ALLOW_SIGNUPS')(e.target.checked)}
               />
             }
             label="Allow Signups"
@@ -114,14 +122,14 @@ function PluginConfig({ config: initialConfig, onBlur, onSave, isPreInstall = fa
           <ConfigTextField
             label="Admin Token"
             value={config.ADMIN_TOKEN}
-            onBlur={handleChange('ADMIN_TOKEN')}
+            onChange={(value) => handleChange('ADMIN_TOKEN')(value)}
             type="password"
             helperText="Token for accessing the admin panel"
           />
           <ConfigTextField
             label="Port"
             value={config.PORT}
-            onBlur={handleChange('PORT')}
+            onChange={(value) => handleChange('PORT')(value)}
             helperText="Port for the Vaultwarden server"
           />
           <Typography variant="subtitle2" sx={{ mt: 2 }}>
@@ -130,31 +138,31 @@ function PluginConfig({ config: initialConfig, onBlur, onSave, isPreInstall = fa
           <ConfigTextField
             label="SMTP Host"
             value={config.SMTP_HOST}
-            onBlur={handleChange('SMTP_HOST')}
+            onChange={(value) => handleChange('SMTP_HOST')(value)}
             helperText="SMTP server host"
           />
           <ConfigTextField
             label="SMTP From"
             value={config.SMTP_FROM}
-            onBlur={handleChange('SMTP_FROM')}
+            onChange={(value) => handleChange('SMTP_FROM')(value)}
             helperText="Email address to send emails from"
           />
           <ConfigTextField
             label="SMTP Port"
             value={config.SMTP_PORT}
-            onBlur={handleChange('SMTP_PORT')}
+            onChange={(value) => handleChange('SMTP_PORT')(value)}
             helperText="SMTP server port"
           />
           <ConfigTextField
             label="SMTP Username"
             value={config.SMTP_USERNAME}
-            onBlur={handleChange('SMTP_USERNAME')}
+            onChange={(value) => handleChange('SMTP_USERNAME')(value)}
             helperText="SMTP server username"
           />
           <ConfigTextField
             label="SMTP Password"
             value={config.SMTP_PASSWORD}
-            onBlur={handleChange('SMTP_PASSWORD')}
+            onChange={(value) => handleChange('SMTP_PASSWORD')(value)}
             type="password"
             helperText="SMTP server password"
           />
