@@ -11,31 +11,6 @@ import {
   Typography,
 } from '@mui/material';
 
-const currentDomain = new URL(window.location.href);
-const apiURL = `http://${currentDomain.hostname}:3000/api/plugins/vaultwarden`;
-
-const ConfigTextField = React.memo(({ label, value, onChange, type = 'text', helperText = '' }) => {
-  const [localValue, setLocalValue] = React.useState(value);
-
-  React.useEffect(() => {
-    setLocalValue(value);
-  }, [value]);
-
-  return (
-    <TextField
-      fullWidth
-      label={label}
-      value={localValue || ''}
-      onChange={(e) => setLocalValue(e.target.value)}
-      onBlur={() => onChange?.(localValue)}
-      type={type}
-      helperText={helperText}
-      autoComplete="off"
-      inputProps={{ autoComplete: 'off' }}
-    />
-  );
-});
-
 function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = false }) {
   var [config, setConfig] = useState(
     initialConfig || {
@@ -45,6 +20,7 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
       PORT: '8100',
       SMTP_HOST: '',
       SMTP_FROM: '',
+      USE_SENDMAIL: false,
       SMTP_PORT: '587',
       SMTP_USERNAME: '',
       SMTP_PASSWORD: '',
@@ -135,6 +111,15 @@ function PluginConfig({ config: initialConfig, onChange, onSave, isPreInstall = 
           <Typography variant="subtitle2" sx={{ mt: 2 }}>
             Email Configuration (Optional)
           </Typography>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={config.USE_SENDMAIL || false}
+                onChange={(e) => handleChange('USE_SENDMAIL')(e.target.checked)}
+              />
+            }
+            label="Use Sendmail"
+          />
           <ConfigTextField
             label="SMTP Host"
             value={config.SMTP_HOST}
